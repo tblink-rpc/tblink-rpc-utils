@@ -1,0 +1,17 @@
+
+package:
+   name: tblink-rpc-utils
+   version: 0.0.1
+   
+   deps:
+   - name: pyyaml
+     src: pypi
+   - name: pykwalify
+     src: pypi
+   
+   dev-deps:
+   - name: pyyaml
+     src: pypi
+   - name: pykwalify
+     src: pypi
+     
