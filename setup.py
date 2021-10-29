@@ -31,11 +31,8 @@ setup(
   ],
   install_requires=[
       'pyyaml',
-      'pyqkwalify',
+      'pykwalify',
       'pyyaml-srcinfo-loader',
   ],
-  cmdclass={
-    'install': InstallCmd
-  },
 )
 
