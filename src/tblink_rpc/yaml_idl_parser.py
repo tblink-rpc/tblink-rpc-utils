@@ -103,9 +103,8 @@ class YamlIDLParser(object):
             parameters_s = method["parameters"]
             
             for param_si in parameters_s:
-                pname = next(iter(param_si))
-                param_s = param_si[pname]
-                ptype = self._process_type(param_s)
+                pname = param_si["name"]
+                ptype = self._process_type(param_si["type"])
                 method_m.add_param(pname, ptype)
             
         
