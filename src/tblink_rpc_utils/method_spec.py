@@ -4,7 +4,7 @@ Created on Oct 17, 2021
 @author: mballance
 '''
 from typing import List, Tuple
-from tblink_rpc.type_spec import TypeSpec
+from tblink_rpc_utils.type_spec import TypeSpec
 
 class MethodSpec(object):
     

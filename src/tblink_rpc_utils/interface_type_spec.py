@@ -3,7 +3,7 @@ Created on Oct 17, 2021
 
 @author: mballance
 '''
-from tblink_rpc.method_spec import MethodSpec
+from tblink_rpc_utils.method_spec import MethodSpec
 
 
 class InterfaceTypeSpec(object):

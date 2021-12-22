@@ -13,7 +13,7 @@ if "BUILD_NUM" in os.environ.keys():
 setup(
   name = "tblink-rpc-utils",
   version = version,
-  packages=['tblink_rpc'],
+  packages=['tblink_rpc_utils'],
   package_dir = {'' : 'src'},
   author = "Matthew Ballance",
   author_email = "matt.ballance@gmail.com",
@@ -23,7 +23,7 @@ setup(
   url = "https://github.com/tblink-rpc/tblink-rpc-utils",
   entry_points={
     'console_scripts': [
-      'tblink-rpc = tblink_rpc.__main__:main'
+      'tblink-rpc-utils = tblink_rpc_utils.__main__:main'
     ]
   },
   setup_requires=[

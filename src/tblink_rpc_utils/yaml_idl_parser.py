@@ -3,14 +3,13 @@ Created on Oct 19, 2021
 
 @author: mballance
 '''
-from tblink_rpc.idl_spec import IDLSpec
+from tblink_rpc_utils.idl_spec import IDLSpec
 import yaml
 from yaml.loader import FullLoader
-from tblink_rpc.interface_type_spec import InterfaceTypeSpec
-from tblink_rpc.method_spec import MethodSpec
-from _ast import Param
-from tblink_rpc.type_spec_int import TypeSpecInt
-from tblink_rpc.type_spec import TypeKind, TypeSpec
+from tblink_rpc_utils.interface_type_spec import InterfaceTypeSpec
+from tblink_rpc_utils.method_spec import MethodSpec
+from tblink_rpc_utils.type_spec_int import TypeSpecInt
+from tblink_rpc_utils.type_spec import TypeKind, TypeSpec
 
 class YamlIDLParser(object):
     
