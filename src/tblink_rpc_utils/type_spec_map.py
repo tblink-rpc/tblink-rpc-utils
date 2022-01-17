@@ -3,7 +3,7 @@ Created on Oct 24, 2021
 
 @author: mballance
 '''
-from tblink_rpc.type_spec import TypeSpec, TypeKind
+from tblink_rpc_utils.type_spec import TypeSpec, TypeKind
 
 class TypeSpecMap(TypeSpec):
     

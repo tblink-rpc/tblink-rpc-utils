@@ -4,14 +4,14 @@ Created on Oct 24, 2021
 @author: mballance
 '''
 import os
-
-from tblink_rpc.output import Output
-from tblink_rpc.output_spec import OutputSpec
-from tblink_rpc.output_writer import OutputWriter
-from crypt import methods
-from tblink_rpc.method_spec import MethodSpec
 import types
-from tblink_rpc.type_spec import TypeSpec, TypeKind
+
+from tblink_rpc_utils.output import Output
+from tblink_rpc_utils.output_spec import OutputSpec
+from tblink_rpc_utils.output_writer import OutputWriter
+from crypt import methods
+from tblink_rpc_utils.method_spec import MethodSpec
+from tblink_rpc_utils.type_spec import TypeSpec, TypeKind
 
 
 class OutputWriterCpp(OutputWriter):

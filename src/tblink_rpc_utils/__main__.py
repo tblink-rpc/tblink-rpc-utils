@@ -4,7 +4,7 @@ Created on Oct 16, 2021
 @author: mballance
 '''
 import argparse
-from tblink_rpc.cmd_gen import cmd_gen
+from tblink_rpc_utils.cmd_gen import cmd_gen
 
 def get_parser():
     parser = argparse.ArgumentParser()

@@ -3,7 +3,7 @@ Created on Oct 20, 2021
 
 @author: mballance
 '''
-from tblink_rpc.interface_type_spec import InterfaceTypeSpec
+from tblink_rpc_utils.interface_type_spec import InterfaceTypeSpec
 from typing import List
 
 class OutputSpec(object):

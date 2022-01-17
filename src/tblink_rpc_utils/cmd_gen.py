@@ -3,10 +3,10 @@ Created on Oct 20, 2021
 
 @author: mballance
 '''
-from tblink_rpc.output_writer_cpp import OutputWriterCpp
-from tblink_rpc.input_reader_yaml import InputReaderYaml
-from tblink_rpc.input_spec import InputSpec
-from tblink_rpc.output_spec import OutputSpec
+from tblink_rpc_utils.output_writer_cpp import OutputWriterCpp
+from tblink_rpc_utils.input_reader_yaml import InputReaderYaml
+from tblink_rpc_utils.input_spec import InputSpec
+from tblink_rpc_utils.output_spec import OutputSpec
 
 def cmd_gen(args):
     print("cmd_gen")

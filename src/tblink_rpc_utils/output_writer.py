@@ -3,7 +3,7 @@ Created on Oct 20, 2021
 
 @author: mballance
 '''
-from tblink_rpc.output_spec import OutputSpec
+from tblink_rpc_utils.output_spec import OutputSpec
 
 class OutputWriter(object):
     

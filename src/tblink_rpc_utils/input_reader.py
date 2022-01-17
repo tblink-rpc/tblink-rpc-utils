@@ -3,8 +3,8 @@ Created on Oct 20, 2021
 
 @author: mballance
 '''
-from tblink_rpc.input_spec import InputSpec
-from tblink_rpc.idl_spec import IDLSpec
+from tblink_rpc_utils.input_spec import InputSpec
+from tblink_rpc_utils.idl_spec import IDLSpec
 
 class InputReader(object):
     
