@@ -40,8 +40,8 @@ class YamlIDLParser(object):
             if not isinstance(iftype, dict):
                 raise Exception("Expect a dict of <iftype-name>:, not %s" % (
                     str(iftype)))
-            iftype_name = next(iter(iftype.keys()))
-            iftype_s = iftype[iftype_name]
+            iftype_name = iftype["name"]
+            iftype_s = iftype
             
             iftype_m = InterfaceTypeSpec(iftype_name)
             
@@ -72,8 +72,8 @@ class YamlIDLParser(object):
     
     def _process_method(self, method_s):
         
-        method_name = next(iter(method_s))
-        method = method_s[method_name]
+        method_name = method_s["name"]
+        method = method_s
         rtype_m = None
         is_export = False
         is_blocking = False
