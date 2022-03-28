@@ -7,22 +7,30 @@ from tblink_rpc_utils.output_writer_cpp import OutputWriterCpp
 from tblink_rpc_utils.input_reader_yaml import InputReaderYaml
 from tblink_rpc_utils.input_spec import InputSpec
 from tblink_rpc_utils.output_spec import OutputSpec
+from tblink_rpc_utils.input_reader_python import InputReaderPython
+from tblink_rpc_utils.output_writer_sv import OutputWriterSv
 
 def cmd_gen(args):
     print("cmd_gen")
     
     os_m = {
-        "cpp" : OutputWriterCpp()
+        "cpp" : OutputWriterCpp(),
+        "sv" : OutputWriterSv(False),
+        "sv-uvm" : OutputWriterSv(False),
         }
     is_m = {
         "default": InputReaderYaml(),
-        "yaml": InputReaderYaml()
+        "yaml": InputReaderYaml(),
+        "python": InputReaderPython()
         }
 
     in_spec = InputSpec()
     in_spec.files.extend(args.files)
+    
+    if hasattr(args, "libpath") and args.libpath is not None:
+        in_spec.libpath.extend(args.libpath)
 
-    if hasattr(args, "input_stype") and args.input_style is not None:
+    if hasattr(args, "input_style") and args.input_style is not None:
         if not args.input_style in is_m.keys():
             raise Exception("Input style %s not recognized" % args.input_style)
         in_p = is_m[args.input_style]

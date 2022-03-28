@@ -17,6 +17,9 @@ def get_parser():
     
     gen_cmd = subparsers.add_parser("gen",
         help="Generate output from input IDL")
+    gen_cmd.add_argument("-l", "--libpath",
+        action="append",
+        help="Appends a directory to the library path")
     gen_cmd.add_argument("-i", "--include",
         action="append", 
         help="Specifies IDL elements to include")

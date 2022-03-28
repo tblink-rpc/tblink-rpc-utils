@@ -8,4 +8,5 @@ class InputSpec(object):
     
     def __init__(self):
         self.files = []
+        self.libpath = []
         pass

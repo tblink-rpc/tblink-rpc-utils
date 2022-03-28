@@ -33,6 +33,7 @@ setup(
       'pyyaml',
       'pykwalify',
       'pyyaml-srcinfo-loader',
+      'pytblink_rpc',
   ],
 )
 
