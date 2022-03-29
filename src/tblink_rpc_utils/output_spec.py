@@ -10,6 +10,8 @@ class OutputSpec(object):
     
     def __init__(self):
         self.namespace = None
+
         self.out = None
+        
 #        self.stypes : 
         self.iftypes : List[InterfaceTypeSpec] = []

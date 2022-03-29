@@ -65,6 +65,9 @@ class InputReaderPython(InputReader):
             method_t.is_export,
             method_t.is_task)
         
+        for p in method_t.params:
+            ret.add_param(p[0], self._ptype2idl(p[1]))
+        
         return ret
 
     def _ptype2idl(self, ptype):
