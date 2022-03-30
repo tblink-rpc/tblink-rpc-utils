@@ -16,7 +16,7 @@ def cmd_gen(args):
     os_m = {
         "cpp" : OutputWriterCpp(),
         "sv" : OutputWriterSv(False),
-        "sv-uvm" : OutputWriterSv(False),
+        "sv-uvm" : OutputWriterSv(True),
         }
     is_m = {
         "default": InputReaderYaml(),

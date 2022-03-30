@@ -38,12 +38,17 @@ class OutputWriterSv(OutputWriter):
 
     def _gen_iftype(self, out, iftype):
         out.println("typedef class %s_proxy;" % iftype.name)
+        out.println("typedef class %s_mirror_proxy;" % iftype.name)
         out.println("typedef class %s_t;" % iftype.name)
         out.println()
-        
+
+        self._gen_proxy_if(out, iftype, False)        
+        out.println()
         self._gen_base_impl(out, iftype, False)
         out.println()
         self._gen_proxy(out, iftype, False)
+        out.println()
+        self._gen_proxy_if(out, iftype, True)
         out.println()
         self._gen_base_impl(out, iftype, True)
         out.println()
@@ -55,21 +60,18 @@ class OutputWriterSv(OutputWriter):
 
     def _gen_base_impl(self, out, iftype, is_mirror):
         # TODO: for non-uvm output, should use a tblink base class
+
+        mirror_s = ""        
         if is_mirror:
-            out.println("class %s_mirror_base #(type Tbase=uvm_pkg::uvm_object) extends Tbase;" % (
-                iftype.name))
-        else:
-            out.println("class %s_base #(type Tbase=uvm_pkg::uvm_object) extends Tbase;" % (
-                iftype.name))
+            mirror_s = "_mirror"
+            
+        out.println("class %s%s_base #(type Tbase=uvm_pkg::uvm_object) extends Tbase;" % (
+                iftype.name, mirror_s))
             
         out.inc_ind()
 
-        if is_mirror:        
-            out.println("typedef %s_mirror_proxy #(%s_mirror_base) proxy_t;" % (iftype.name, iftype.name))
-        else:
-            out.println("typedef %s_proxy #(%s_base) proxy_t;" % (iftype.name, iftype.name))
-            
-        out.println("proxy_t m_proxy;")
+        out.println("%s%s_proxy_if m_proxy;" % (iftype.name, mirror_s))
+        out.println()
         
         if self.is_uvm:
             out.println("function new(string name=\"%s\");" % iftype.name)
@@ -80,7 +82,8 @@ class OutputWriterSv(OutputWriter):
 
         out.println()
         
-        out.println("virtual function void set_proxy(proxy_t proxy);")
+        out.println("virtual function void set_proxy(%s%s_proxy_if proxy);" % (
+            iftype.name, mirror_s))
         out.inc_ind()
         out.println("m_proxy = proxy;")
         out.dec_ind()
@@ -148,7 +151,7 @@ class OutputWriterSv(OutputWriter):
             if m.rtype is not None and not m.is_blocking:
                 out.println("return m_proxy.%s(" % m.name)
             else:
-                out.println("m_proxy.%s(")
+                out.println("m_proxy.%s(" % m.name)
                 
             out.inc_ind()
             out.inc_ind()
@@ -177,15 +180,68 @@ class OutputWriterSv(OutputWriter):
             out.println("endtask")
         else:
             out.println("endfunction")                        
-    
+
+    def _gen_proxy_if(self, out, iftype, is_mirror):
+        
+        mirror_s = ""
+        if is_mirror:
+            mirror_s = "_mirror"
+        
+        out.println("class %s%s_proxy_if extends tblink_rpc::IInterfaceImplProxy;" % (
+            iftype.name, mirror_s))
+        out.inc_ind()
+        
+        # Now, generate base virtual methods all imports
+        for m in iftype.methods:
+            if not m.is_export and not is_mirror or m.is_export and is_mirror:
+                if not m.is_blocking:
+                    if m.rtype is None:
+                        out.println("virtual function void %s(" % m.name)
+                    else:
+                        out.println("virtual function %s %s(" % (
+                            self._gen_mksvtype(m.rtype), m.name))
+                else:
+                    out.println("virtual task %s(" % m.name)
+                    
+                out.inc_ind()
+                out.inc_ind()
+
+                # Handle return value for tasks                    
+                if m.is_blocking and m.rtype is not None:
+                    comma = ""
+                    if len(m.params) > 0:
+                        comma = ","
+                    out.println("output %s retval%s" % (
+                        self._gen_mksvtype(m.rtype), comma))
+                    
+                for i,p in enumerate(m.params):
+                    comma = ""
+                    if i+1 < len(m.params):
+                        comma = ","
+                    out.println("input %s %s%s" % (
+                        self._gen_mksvtype(p[1]), p[0], comma))
+                out.println(");")
+                out.dec_ind()
+                
+                # Now the body...
+                
+                out.dec_ind()
+                if m.is_blocking:
+                    out.println("endtask")
+                else:
+                    out.println("endfunction")
+        
+        out.dec_ind()
+        out.println("endclass")
+        
     def _gen_proxy(self, out, iftype, is_mirror):
         
         mirror_s = ""
         if is_mirror:
             mirror_s = "_mirror"
         
-        out.println("class %s%s_proxy #(type T=%s_base) extends tblink_rpc::IInterfaceImplProxy;" % (
-            iftype.name, mirror_s, iftype.name))
+        out.println("class %s%s_proxy #(type T=%s_base) extends %s%s_proxy_if;" % (
+            iftype.name, mirror_s, iftype.name, iftype.name, mirror_s))
         out.inc_ind()
         out.println("typedef %s_t IfTypeT;" % iftype.name)
         out.println("typedef T ImplT;")
@@ -227,7 +283,7 @@ class OutputWriterSv(OutputWriter):
         
         for m in iftype.methods:
             if not m.is_export and not is_mirror or m.is_export and is_mirror:
-                out.println("if ((m_method_t_%s=iftype.findMethod(\"%s\")) == nulll) begin" % (m.name, m.name))
+                out.println("if ((m_method_t_%s=iftype.findMethod(\"%s\")) == null) begin" % (m.name, m.name))
                 out.inc_ind()
                 if self.is_uvm:
                     out.println("`uvm_fatal(\"%s\", \"Failed to find method '%s'\");" % (iftype.name, m.name))
@@ -274,7 +330,7 @@ class OutputWriterSv(OutputWriter):
                 out.dec_ind()
                 
                 # Now the body...
-                out.println("tblink_rpc::IParamVal _params = m_ifinst.mkValVec();")
+                out.println("tblink_rpc::IParamValVec _params = m_ifinst.mkValVec();")
                 out.println("tblink_rpc::IParamVal _rv_base;")
                 if m.rtype is not None:
                     out.println("%s _rv_tv;" % self._gen_mkvtype(m.rtype))
@@ -335,7 +391,7 @@ class OutputWriterSv(OutputWriter):
         out.println("class %s_t extends tblink_rpc::InterfaceTypeRgy #(" % iftype.name)
         out.inc_ind()
         out.inc_ind()
-        out.println("%s_factory," % iftype.name)
+        out.println("%s_t," % iftype.name)
         out.println("\"%s\"," % iftype.name)
         out.println("tblink_rpc::InterfaceImplFactoryBase #(%s_proxy #(%s_base))," % (
             iftype.name,
@@ -347,7 +403,7 @@ class OutputWriterSv(OutputWriter):
         
         out.println("virtual function tblink_rpc::IInterfaceType defineType(tblink_rpc::IEndpoint ep);")
         out.inc_ind()
-        out.println("tblink::IInterfaceType iftype = ep.findInterfaceType(name());")
+        out.println("tblink_rpc::IInterfaceType iftype = ep.findInterfaceType(name());")
         out.println()
         out.println("if (iftype == null) begin")
         out.inc_ind()
