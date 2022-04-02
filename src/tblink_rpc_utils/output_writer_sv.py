@@ -54,7 +54,11 @@ class OutputWriterSv(OutputWriter):
         out.println()
         self._gen_proxy(out, iftype, True)
         out.println()
-        self._gen_type_factory(out, iftype)
+        self._gen_type_t(out, iftype)
+        out.println()
+        self._gen_factory(out, iftype, False)
+        out.println()
+        self._gen_factory(out, iftype, True)
         out.println()
         pass
 
@@ -387,7 +391,7 @@ class OutputWriterSv(OutputWriter):
         out.println("endclass")
         pass
         
-    def _gen_type_factory(self, out : Output, iftype):
+    def _gen_type_t(self, out : Output, iftype):
         out.println("class %s_t extends tblink_rpc::InterfaceTypeRgy #(" % iftype.name)
         out.inc_ind()
         out.inc_ind()
@@ -437,6 +441,84 @@ class OutputWriterSv(OutputWriter):
         out.dec_ind()
         out.println()
         
+        out.println("endclass")
+        pass
+    
+    def _gen_factory(self, out : Output, iftype, is_mirror):
+        mirror_s = ""
+        if is_mirror:
+            mirror_s = "_mirror"
+            
+        out.println("class %s%s_factory #(type implT);" % (iftype.name, mirror_s))
+        out.inc_ind()
+        out.println("typedef %s%s_proxy #(implT) proxy_t;" % (
+            iftype.name, mirror_s))
+        out.println()
+        out.println("static function void createInst(string name, implT obj, tblink_rpc::IEndpoint ep);")
+        out.inc_ind()
+        out.println("proxy_t proxy = new(obj);")
+        out.println("%s_t type_rgy = %s_t::inst();" % (iftype.name, iftype.name))
+        out.println("tblink_rpc::IInterfaceType iftype;")
+        out.println("tblink_rpc::IInterfaceInst ifinst;")
+        out.println()
+        out.println("if (ep == null) begin")
+        out.inc_ind()
+        out.println("tblink_rpc::TbLink tblink = tblink_rpc::TbLink::inst();")
+        out.dec_ind()
+        out.println("end")
+        out.println()
+        out.println("ifinst = ep.defineInterfaceInst(")
+        out.inc_ind()
+        out.println("type_rgy.defineType(ep),")
+        out.println("name,")
+        if is_mirror:
+            out.println("1,")
+        else:
+            out.println("0,")
+        out.println("proxy);")
+        out.dec_ind()
+        
+        out.println()
+        out.println("if (ifinst == null) begin")
+        out.inc_ind()
+        if self.is_uvm:
+            out.println("`uvm_fatal(\"" + iftype.name + "\", $sformatf(\"Failed to create interface inst: %0s\", ep.last_error()));")
+        else:
+            out.println("$display(\"Error: " + iftype.name + " Failed to create interface inst: %0s\", ep.last_error());")
+        out.dec_ind()
+        out.println("end")
+        
+        out.dec_ind()
+        out.println("endfunction")
+        
+        out.println()
+        out.println("static function void createObj(implT obj, tblink_rpc::IEndpoint ep);")
+        out.inc_ind()
+        out.println("proxy_t proxy = new(obj);")
+        out.println("%s_t type_rgy = %s_t::inst();" % (iftype.name, iftype.name))
+        out.println("tblink_rpc::IInterfaceType iftype;")
+        out.println("tblink_rpc::IInterfaceInst ifinst;")
+        out.println()
+        out.println("if (ep == null) begin")
+        out.inc_ind()
+        out.println("tblink_rpc::TbLink tblink = tblink_rpc::TbLink::inst();")
+        out.dec_ind()
+        out.println("end")
+        out.println()
+        out.println("ifinst = ep.createInterfaceObj(")
+        out.inc_ind()
+        out.println("type_rgy.defineType(ep),")
+        if is_mirror:
+            out.println("1,")
+        else:
+            out.println("0,")
+        out.println("proxy);")
+        out.dec_ind()
+        
+        out.dec_ind()
+        out.println("endfunction")
+        
+        out.dec_ind()
         out.println("endclass")
         pass
     
