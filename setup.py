@@ -32,7 +32,6 @@ setup(
   install_requires=[
       'pyyaml',
       'pykwalify',
-      'pytblink_rpc',
   ],
 )
 
